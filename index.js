@@ -82,23 +82,20 @@ exports.createLanguageModel = (options, locale) => {
     vui = {};
   }
 
-  if (!vui.interactionModel) {
-    vui.interactionModel = {};
-  }
-  if (!vui.interactionModel.languageModel) {
-    vui.interactionModel.languageModel = {
+  if (!vui.languageModel) {
+    vui.languageModel = {
       invocationName: options.invocation || ""
     };
   } else if (options.invocation) {
-    vui.interactionModel.languageModel.invocationName = options.invocation;
+    vui.languageModel.invocationName = options.invocation;
   }
 
   let generationPromise = Promise.all([
     createPromise(intentCreators, locale).then(intents => {
-      vui.interactionModel.languageModel.intents = intents;
+      vui.languageModel.intents = intents;
     }),
     createPromise(typeCreators, locale).then(types => {
-      vui.interactionModel.languageModel.types = types;
+      vui.languageModel.types = types;
     })
   ]).then(() => {
     return Promise.resolve(vui);
