@@ -2,9 +2,9 @@
  * Copyright (c) 2017. Taimos GmbH http://www.taimos.de
  */
 
-const fs = require('fs');
-const intentLib = require('./lib/intents');
-const typeLib = require('./lib/types');
+const fs = require("fs");
+const intentLib = require("./lib/intents");
+const typeLib = require("./lib/types");
 
 // Intents
 /**
@@ -70,10 +70,10 @@ exports.readTypesFromYAML = typeLib.readTypesFromYAML;
  * @return {Promise.<VoiceInterface>}
  */
 exports.createLanguageModel = (options, locale) => {
-  'use strict';
+  "use strict";
   let intentCreators = options.intentCreators || [];
   let typeCreators = options.typeCreators || [];
-  
+
   let modelFileName = `./models/${locale}.json`;
   let vui;
   if (fs.existsSync(modelFileName)) {
@@ -81,19 +81,18 @@ exports.createLanguageModel = (options, locale) => {
   } else {
     vui = {};
   }
-  
+
   if (!vui.interactionModel) {
     vui.interactionModel = {};
   }
   if (!vui.interactionModel.languageModel) {
     vui.interactionModel.languageModel = {
-      invocationName: options.invocation || ''
+      invocationName: options.invocation || ""
     };
   } else if (options.invocation) {
     vui.interactionModel.languageModel.invocationName = options.invocation;
   }
-  addDummyDialog(vui);
-  
+
   let generationPromise = Promise.all([
     createPromise(intentCreators, locale).then(intents => {
       vui.interactionModel.languageModel.intents = intents;
@@ -104,11 +103,11 @@ exports.createLanguageModel = (options, locale) => {
   ]).then(() => {
     return Promise.resolve(vui);
   });
-  
+
   if (options.postProcessor) {
     generationPromise = generationPromise.then(options.postProcessor);
   }
-  
+
   return generationPromise.then(vui => {
     if (options.pretty) {
       fs.writeFileSync(modelFileName, JSON.stringify(vui, null, 2));
@@ -119,50 +118,8 @@ exports.createLanguageModel = (options, locale) => {
   });
 };
 
-const addDummyDialog = vui => {
-  'use strict';
-  
-  let interactionModel = vui.interactionModel;
-  if (!interactionModel.prompts) {
-    interactionModel.prompts = [];
-  }
-  if (interactionModel.prompts.length !== 0) {
-    return;
-  }
-  if (!interactionModel.dialog) {
-    interactionModel.dialog = {};
-  }
-  if (!interactionModel.dialog.intents) {
-    interactionModel.dialog.intents = [];
-  }
-  interactionModel.dialog.intents.push({
-    name: 'DialogActivationDummyIntent',
-    confirmationRequired: false,
-    slots: [
-      {
-        name: 'dummy',
-        type: 'AMAZON.NUMBER',
-        elicitationRequired: true,
-        confirmationRequired: false,
-        prompts: {
-          elicitation: 'Elicit.Intent-DialogActivationDummyIntent.IntentSlot-dummy'
-        }
-      }
-    ]
-  });
-  interactionModel.prompts.push({
-    id: 'Elicit.Intent-DialogActivationDummyIntent.IntentSlot-dummy',
-    variations: [
-      {
-        type: 'PlainText',
-        value: 'Dummy question'
-      }
-    ]
-  });
-};
-
 const createPromise = (arg, locale) => {
-  'use strict';
+  "use strict";
   let promise = undefined;
   if (arg instanceof Function) {
     let invoked = arg(locale);
@@ -173,10 +130,11 @@ const createPromise = (arg, locale) => {
     }
   } else if (Array.isArray(arg)) {
     let promiseArray = arg.map(fn => createPromise(fn, locale));
-    promise = Promise.all(promiseArray).then(results => [].concat.apply([], results));
+    promise = Promise.all(promiseArray).then(results =>
+      [].concat.apply([], results)
+    );
   } else {
     promise = Promise.resolve(arg);
   }
   return promise;
 };
-
