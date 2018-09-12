@@ -2,9 +2,9 @@
  * Copyright (c) 2017. Taimos GmbH http://www.taimos.de
  */
 
-const fs = require("fs");
-const intentLib = require("./lib/intents");
-const typeLib = require("./lib/types");
+const fs = require('fs');
+const intentLib = require('./lib/intents');
+const typeLib = require('./lib/types');
 
 // Intents
 /**
@@ -70,7 +70,7 @@ exports.readTypesFromYAML = typeLib.readTypesFromYAML;
  * @return {Promise.<VoiceInterface>}
  */
 exports.createLanguageModel = (options, locale) => {
-  "use strict";
+  'use strict';
   let intentCreators = options.intentCreators || [];
   let typeCreators = options.typeCreators || [];
 
@@ -84,7 +84,7 @@ exports.createLanguageModel = (options, locale) => {
 
   if (!vui.languageModel) {
     vui.languageModel = {
-      invocationName: options.invocation || ""
+      invocationName: options.invocation || ''
     };
   } else if (options.invocation) {
     vui.languageModel.invocationName = options.invocation;
@@ -116,7 +116,7 @@ exports.createLanguageModel = (options, locale) => {
 };
 
 const createPromise = (arg, locale) => {
-  "use strict";
+  'use strict';
   let promise = undefined;
   if (arg instanceof Function) {
     let invoked = arg(locale);
